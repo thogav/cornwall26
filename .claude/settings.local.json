@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__77238345-1681-4f27-b690-d9409df4d151__search_files",
+      "Bash(brew install *)",
+      "Bash(pip3 install *)",
+      "Bash(python3 -c ' *)",
+      "Bash(mkdir -p \"/Users/tg/Opus AI Workspace/Cornwall App/.claude\")",
+      "mcp__Claude_Preview__preview_start",
+      "WebSearch",
+      "Bash(curl -L -o hero.jpg \"https://unsplash.com/photos/tHQgGpBDmNU/download?ixlib=rb-4.0.3&w=1920\" --max-time 30 -s -w \"HTTP %{http_code} | Size: %{size_download} bytes\")",
+      "Bash(curl -L -o hero_alt1.jpg \"https://unsplash.com/photos/huL0C7_HabQ/download?ixlib=rb-4.0.3&w=1920\" --max-time 30 -s -w \"HTTP %{http_code} | %{size_download} bytes\")",
+      "Bash(curl -L -o hero_alt2.jpg \"https://unsplash.com/photos/tUJs-rrYMeI/download?ixlib=rb-4.0.3&w=1920\" --max-time 30 -s -w \" | HTTP %{http_code} | %{size_download} bytes\")",
+      "WebFetch(domain:www.cornwall-tides.com)",
+      "WebFetch(domain:www.admiralty.co.uk)",
+      "WebFetch(domain:rapidapi.com)",
+      "WebFetch(domain:tidepredictions.pla.co.uk)",
+      "WebFetch(domain:www.worldtides.info)",
+      "WebFetch(domain:stormglass.io)",
+      "Bash(grep -n \"tlHtml\\\\|drivingHtml\\\\|hotelHtml\\\\|activityNames\\\\|activitiesHtml\\\\|dag-\\\\${day\" \"/Users/tg/Opus AI Workspace/Cornwall App/js/app.js\")",
+      "WebFetch(domain:www.api.gov.uk)",
+      "WebFetch(domain:tideschart.com)",
+      "WebFetch(domain:www.tidetimes.org.uk)",
+      "WebFetch(domain:tides.willyweather.co.uk)",
+      "WebFetch(domain:www.visitmyharbour.com)",
+      "WebFetch(domain:www.cornwalltides.co.uk)",
+      "WebFetch(domain:www.uktides.com)",
+      "WebFetch(domain:ntslf.org)",
+      "WebFetch(domain:www.ntslf.org)",
+      "WebFetch(domain:tides.today)",
+      "WebFetch(domain:easytide.admiralty.co.uk)",
+      "WebFetch(domain:tides4fishing.com)",
+      "Bash(git remote *)",
+      "Bash(git log *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(git config *)"
+    ]
+  }
+}

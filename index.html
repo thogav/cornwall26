@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a2744" />
+  <meta name="description" content="Devon & Cornwall 2026 — Reiseapp for Eirin, Stig, Pia og Thomas" />
+  <title>Cornwall & Devon 2026</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=2" />
+</head>
+<body>
+
+  <!-- ================================================ TOP HEADER ================================================ -->
+  <header id="top-header">
+    <h1>Cornwall & Devon 2026</h1>
+    <div class="subtitle">Eirin · Stig · Pia · Thomas &nbsp;·&nbsp; 5–12. juli</div>
+    <nav id="desktop-nav">
+      <button class="nav-btn" data-nav="hjem"        onclick="navigate('hjem')"><i data-lucide="home" width="16" height="16"></i> Hjem</button>
+      <button class="nav-btn" data-nav="reiseplan"   onclick="navigate('reiseplan')"><i data-lucide="calendar-days" width="16" height="16"></i> Reiseplan</button>
+      <button class="nav-btn" data-nav="hoteller"    onclick="navigate('hoteller')"><i data-lucide="building-2" width="16" height="16"></i> Hoteller</button>
+      <button class="nav-btn" data-nav="aktiviteter" onclick="navigate('aktiviteter')"><i data-lucide="compass" width="16" height="16"></i> Aktiviteter</button>
+      <button class="nav-btn" data-nav="program"     onclick="navigate('program')"><i data-lucide="table-2" width="16" height="16"></i> Program</button>
+      <button class="nav-btn" data-nav="kart"        onclick="navigate('kart')"><i data-lucide="map" width="16" height="16"></i> Kart</button>
+      <button class="nav-btn" data-nav="info"        onclick="navigate('info')"><i data-lucide="info" width="16" height="16"></i> Info</button>
+    </nav>
+  </header>
+
+  <!-- ================================================ TODAY BANNER ================================================ -->
+  <div id="today-banner"></div>
+
+  <!-- ================================================ HJEM ================================================ -->
+  <section id="sec-hjem" class="section active" style="padding:0">
+    <div class="home-hero">
+      <div class="hero-label"><i data-lucide="anchor" width="12" height="12"></i> Juli 2026</div>
+      <h2 class="hero-title">Devon &amp;<br>Cornwall</h2>
+      <div class="hero-travelers">
+        <span>Eirin</span><span class="hero-dot">·</span>
+        <span>Stig</span><span class="hero-dot">·</span>
+        <span>Pia</span><span class="hero-dot">·</span>
+        <span>Thomas</span>
+      </div>
+      <div id="countdown-block"></div>
+    </div>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,26 C480,52 960,0 1440,26 L1440,52 L0,52 Z" fill="#f5f5f7"/>
+      </svg>
+    </div>
+
+    <div class="home-cards">
+      <div id="weather-widget"></div>
+
+      <!-- Stats (kun synlig før turen) -->
+      <div class="stats-row" id="home-stats">
+        <div class="stat-chip"><i data-lucide="calendar" width="13" height="13"></i> 8 dager</div>
+        <div class="stat-chip"><i data-lucide="building-2" width="13" height="13"></i> 4 hoteller</div>
+        <div class="stat-chip"><i data-lucide="map-pin" width="13" height="13"></i> 2 fylker</div>
+        <div class="stat-chip"><i data-lucide="car" width="13" height="13"></i> ~1100 km</div>
+      </div>
+
+      <!-- Dynamisk innhold — endres basert på tripfase -->
+      <div id="home-dynamic"></div>
+    </div>
+  </section>
+
+  <!-- ================================================ REISEPLAN ================================================ -->
+  <section id="sec-reiseplan" class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">5–12. juli 2026</div>
+      <h2 class="section-title">Reiseplan</h2>
+      <p class="section-desc">Dag for dag — klikk på aktiviteter for å se detaljer</p>
+      <div id="days-container"></div>
+    </div>
+  </section>
+
+  <!-- ================================================ HOTELLER ================================================ -->
+  <section id="sec-hoteller" class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Overnattinger</div>
+      <h2 class="section-title">Hoteller</h2>
+      <p class="section-desc">4 steder gjennom 8 dager</p>
+      <div id="hotels-container"></div>
+    </div>
+  </section>
+
+  <!-- ================================================ AKTIVITETER ================================================ -->
+  <section id="sec-aktiviteter" class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Forslag & tips</div>
+      <h2 class="section-title">Aktiviteter</h2>
+      <p class="section-desc">Alt dere kan se og gjøre på turen</p>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-day="alle" onclick="filterByDay('alle')">Alle</button>
+        <button class="filter-btn" data-day="1"  onclick="filterByDay(1)">Dag 1</button>
+        <button class="filter-btn" data-day="2"  onclick="filterByDay(2)">Dag 2</button>
+        <button class="filter-btn" data-day="3"  onclick="filterByDay(3)">Dag 3</button>
+        <button class="filter-btn" data-day="4"  onclick="filterByDay(4)">Dag 4</button>
+        <button class="filter-btn" data-day="5"  onclick="filterByDay(5)">Dag 5</button>
+        <button class="filter-btn" data-day="6"  onclick="filterByDay(6)">Dag 6</button>
+        <button class="filter-btn" data-day="7"  onclick="filterByDay(7)">Dag 7</button>
+        <button class="filter-btn" data-day="8"  onclick="filterByDay(8)">Dag 8</button>
+      </div>
+
+      <div id="activities-container"></div>
+
+      <div class="form-card">
+        <div class="form-eyebrow">Del med gjengen</div>
+        <h3 class="form-title">Legg til aktivitet</h3>
+        <p class="form-desc">Fant noe kult? Legg det til her — det deles med alle fire umiddelbart.</p>
+        <div class="supabase-notice" id="supabase-notice" style="display:none">
+          Aktiviteter lagres kun lokalt inntil Supabase er satt opp. Se SETUP.md.
+        </div>
+        <form id="add-activity-form">
+          <div class="form-group">
+            <label class="form-label" for="form-name">Navn *</label>
+            <input class="form-input" type="text" id="form-name" placeholder="f.eks. Padstow Fish & Chips" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-description">Beskrivelse</label>
+            <textarea class="form-textarea" id="form-description" placeholder="Fortell litt om det..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-type">Type</label>
+            <select class="form-select" id="form-type">
+              <option value="attraksjon">Attraksjon</option>
+              <option value="restaurant">Restaurant / Kafe</option>
+              <option value="natur">Natur / Strand</option>
+              <option value="vandring">Vandring</option>
+              <option value="by">By & Landsby</option>
+              <option value="mat-og-drikke">Mat & Drikke</option>
+              <option value="kultur">Kultur</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-day">Dag</label>
+            <select class="form-select" id="form-day"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-location">Sted / lokasjon <span style="font-weight:400;color:var(--text-3)">(aktiverer automatisk tidevann 🌊)</span></label>
+            <input class="form-input" type="text" id="form-location" placeholder="f.eks. Boscastle, Padstow, Porth..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-url">Lenke</label>
+            <input class="form-input" type="url" id="form-url" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="form-by">Lagt til av</label>
+            <select class="form-select" id="form-by">
+              <option value="Eirin">Eirin</option>
+              <option value="Stig">Stig</option>
+              <option value="Pia">Pia</option>
+              <option value="Thomas">Thomas</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-submit"><i data-lucide="plus" width="16" height="16"></i> Legg til</button>
+          <div class="form-success" id="form-success">Aktiviteten er lagt til og deles med alle fire!</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================ PROGRAM ================================================ -->
+  <section id="sec-program" class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Oversikt</div>
+      <h2 class="section-title">Programoversikt</h2>
+      <p class="section-desc">Alle 8 dager i ett blikk</p>
+      <div class="card" style="overflow:hidden">
+        <div class="card-inner" style="padding:12px">
+          <div id="programme-container"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================ KART ================================================ -->
+  <section id="sec-kart" class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Navigasjon</div>
+      <h2 class="section-title">Kart</h2>
+      <p class="section-desc">Reiserute og alle stopp</p>
+
+      <div class="map-placeholder" id="map-container">
+        <div class="map-placeholder-icon"><i data-lucide="map" width="28" height="28"></i></div>
+        <h3>Kart settes opp av Thomas</h3>
+        <p>Gå til <a href="https://mymaps.google.com" target="_blank">mymaps.google.com</a>, legg inn alle pins og ruten, kopier embed-koden og lim den inn i <code>index.html</code>.</p>
+      </div>
+
+      <div class="card card-accent-blue" style="margin-top:16px">
+        <div class="card-inner">
+          <div class="card-header-row" style="margin-bottom:12px">
+            <div class="card-icon card-icon--blue"><i data-lucide="map-pin" width="20" height="20"></i></div>
+            <div><div class="card-title">Hurtiglenker</div><div class="card-subtitle-text">Åpner i Google Maps</div></div>
+          </div>
+          <div class="btn-row" style="flex-direction:column;gap:8px" id="map-links-container"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================ INFO ================================================ -->
+  <section id="sec-info" class="section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Alt du trenger</div>
+      <h2 class="section-title">Nyttig info</h2>
+
+      <div class="card card-accent-navy" style="margin-bottom:14px">
+        <div class="card-inner">
+          <div class="card-header-row" style="margin-bottom:12px">
+            <div class="card-icon card-icon--navy"><i data-lucide="message-circle" width="20" height="20"></i></div>
+            <div><div class="card-title">Cornisk dialekt</div><div class="card-subtitle-text">Snakk som en lokal</div></div>
+          </div>
+          <ul class="phrase-list" id="phrase-list"></ul>
+        </div>
+      </div>
+
+      <div class="card card-accent-teal" style="margin-bottom:14px">
+        <div class="card-inner">
+          <div class="card-header-row" style="margin-bottom:12px">
+            <div class="card-icon card-icon--teal"><i data-lucide="music" width="20" height="20"></i></div>
+            <div><div class="card-title">Spotify-spillelister</div><div class="card-subtitle-text">Lyden av ferie!</div></div>
+          </div>
+          <div class="spotify-grid" id="spotify-list"></div>
+        </div>
+      </div>
+
+      <div class="card card-accent-coral" style="margin-bottom:14px">
+        <div class="card-inner">
+          <div class="card-header-row" style="margin-bottom:12px">
+            <div class="card-icon card-icon--coral"><i data-lucide="shield-alert" width="20" height="20"></i></div>
+            <div><div class="card-title">Nødinfo & Praktisk</div><div class="card-subtitle-text">Spar dette</div></div>
+          </div>
+          <ul class="emergency-list" id="emergency-list"></ul>
+        </div>
+      </div>
+
+      <div class="card card-accent-green" style="margin-bottom:14px">
+        <div class="card-inner">
+          <div class="card-header-row" style="margin-bottom:12px">
+            <div class="card-icon card-icon--green"><i data-lucide="package" width="20" height="20"></i></div>
+            <div><div class="card-title">Pakkeliste</div><div class="card-subtitle-text">Husk det viktigste</div></div>
+          </div>
+          <div class="packing-grid" id="packing-list"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-inner">
+          <div class="card-header-row" style="margin-bottom:12px">
+            <div class="card-icon card-icon--blue"><i data-lucide="lightbulb" width="20" height="20"></i></div>
+            <div><div class="card-title">Visste du at...</div><div class="card-subtitle-text">Cornwall & Devon-fakta</div></div>
+          </div>
+          <div class="facts-list" id="facts-list"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================ BOTTOM NAV ================================================ -->
+  <nav id="bottom-nav">
+    <button class="nav-btn" data-nav="hjem"        onclick="navigate('hjem')"><i data-lucide="home" width="22" height="22"></i>Hjem</button>
+    <button class="nav-btn" data-nav="reiseplan"   onclick="navigate('reiseplan')"><i data-lucide="calendar-days" width="22" height="22"></i>Plan</button>
+    <button class="nav-btn" data-nav="aktiviteter" onclick="navigate('aktiviteter')"><i data-lucide="compass" width="22" height="22"></i>Aktiviteter</button>
+    <button class="nav-btn" data-nav="kart"        onclick="navigate('kart')"><i data-lucide="map" width="22" height="22"></i>Kart</button>
+    <button class="nav-btn" data-nav="info"        onclick="navigate('info')"><i data-lucide="info" width="22" height="22"></i>Info</button>
+  </nav>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="js/data.js?v=4"></script>
+  <script src="js/supabase-client.js?v=2"></script>
+  <script src="js/tides.js?v=2"></script>
+  <script src="js/app.js?v=6"></script>
+</body>
+</html>
