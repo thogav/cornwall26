@@ -33,6 +33,19 @@ async function addUserActivity(activity) {
     localStorage.setItem("cornwall_activities", JSON.stringify(existing));
     return newItem;
   }
+  // Bygg objekt med kun kolonner som finnes i Supabase (snake_case)
+  const payload = {
+    name:          activity.name         || null,
+    description:   activity.description  || null,
+    url:           activity.url          || null,
+    type:          activity.type         || "attraksjon",
+    day:           activity.day          || null,
+    added_by:      activity.added_by     || null,
+    location_name: activity.locationName || activity.location_name || null,
+    lat:           activity.lat          || null,
+    lon:           activity.lon          || null,
+  };
+
   const res = await fetch(`${SUPABASE_URL}/rest/v1/activities`, {
     method: "POST",
     headers: {
@@ -41,9 +54,12 @@ async function addUserActivity(activity) {
       "Content-Type": "application/json",
       "Prefer": "return=representation"
     },
-    body: JSON.stringify(activity)
+    body: JSON.stringify(payload)
   });
-  if (!res.ok) throw new Error("Kunne ikke lagre aktivitet");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Kunne ikke lagre aktivitet");
+  }
   const data = await res.json();
   return data[0];
 }
