@@ -189,12 +189,20 @@ function renderDays() {
     const chipsHtml = chips ? `<div class="suggestion-row">${chips}</div>` : "";
 
     // Tidevann-placeholder — fylles asynkront etter rendering
+    // Sjekk om vi har cached data, quota-exceeded eller ingenting
+    const tideCacheKey = `tides_sg_${day.tideCoords?.lat}_${day.tideCoords?.lon}_${day.date}`;
+    const tideCached = day.tideCoords ? JSON.parse(localStorage.getItem(tideCacheKey) || "null") : null;
     const tideId = `tide-day-${day.day}`;
-    const tideHtml = day.tideCoords
-      ? `<div id="${tideId}" class="tide-setup-hint" style="margin-top:12px">${ic("waves", 13)} ${
-          TIDES_API_KEY ? "Laster tidevann..." : `Sett opp WorldTides API for tidevann — <a href="#" onclick="navigate('info')">se Info</a>`
-        }</div>`
-      : "";
+    let tideHtml = "";
+    if (day.tideCoords && TIDES_API_KEY) {
+      if (tideCached?.data) {
+        // Har data — vis med en gang
+        tideHtml = buildTideHtml(tideCached.data, day.date) || "";
+      } else {
+        // Ingen data ennå (quota eller ikke hentet) — vis ingenting, fylles inn asynkront
+        tideHtml = `<div id="${tideId}"></div>`;
+      }
+    }
 
     return `
       <div class="card card-accent-${day.day % 2 === 0 ? "teal" : "navy"}" id="dag-${day.day}">
