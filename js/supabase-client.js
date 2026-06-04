@@ -90,20 +90,24 @@ async function deleteUserActivity(id) {
   const updated = existing.filter(a => String(a.id) !== String(id));
   localStorage.setItem("cornwall_activities", JSON.stringify(updated));
 
-  // Fjern fra Supabase hvis konfigurert og ikke lokal
+  // Fjern fra Supabase
   if (supabaseReady) {
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/activities?id=eq.${id}`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/activities?id=eq.${id}`, {
         method: "DELETE",
         headers: {
           "apikey": SUPABASE_ANON_KEY,
           "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
         }
       });
-      // Oppdater remote-cache
-      if (window._remoteActivities) {
-        window._remoteActivities = window._remoteActivities.filter(a => String(a.id) !== String(id));
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.warn("Supabase delete feil:", err);
       }
-    } catch { /* ignorer feil */ }
+    } catch (e) { console.warn("Delete feil:", e); }
+  }
+  // Oppdater alltid lokal remote-cache uansett
+  if (window._remoteActivities) {
+    window._remoteActivities = window._remoteActivities.filter(a => String(a.id) !== String(id));
   }
 }

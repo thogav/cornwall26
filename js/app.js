@@ -667,7 +667,11 @@ function renderHomeContent() {
       et.setHours(hh, mm, 0, 0);
       return et > now;
     });
-    const nextEvent = upcomingEvents[0];
+
+    // Nattmodus kl 23:30–07:00 viser alltid sove-kortet
+    const totalMins = now.getHours() * 60 + now.getMinutes();
+    const isNight = totalMins >= 23 * 60 + 30 || totalMins < 7 * 60;
+    const nextEvent = isNight ? null : upcomingEvents[0];
 
     // Restaurant-booking i dag?
     const restaurant = today.restaurant;

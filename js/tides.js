@@ -21,8 +21,13 @@ async function fetchTidesForLocation(lat, lon, startDate, endDate) {
   const cacheKey = `tides_sg_${lat}_${lon}_${startDate}`;
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
-    if (cached && (Date.now() - cached.fetchedAt) < CACHE_TTL_MS) {
-      return cached.data;
+    if (cached) {
+      // Returner cache om den er fersk, ELLER om kvote var overskredet (vent til neste dag)
+      const age = Date.now() - cached.fetchedAt;
+      const quotaTTL = 24 * 60 * 60 * 1000;
+      if (age < CACHE_TTL_MS || (cached.quotaExceeded && age < quotaTTL)) {
+        return cached.data; // null ved quota-exceeded — ingen nye kall
+      }
     }
   } catch { /* ignorer */ }
 
@@ -37,10 +42,11 @@ async function fetchTidesForLocation(lat, lon, startDate, endDate) {
 
     const json = await res.json();
 
-    // Kvote overskredet — vis tydelig melding, ikke cache null-resultat
+    // Kvote overskredet — cache i 24 timer slik vi ikke spammer API-et
     if (json.errors?.key === "API quota exceeded") {
       console.warn("🌊 Stormglass: dagskvote (10 kall) brukt opp. Prøver igjen i morgen.");
-      return null; // Ingen cache — prøver automatisk neste dag
+      localStorage.setItem(cacheKey, JSON.stringify({ fetchedAt: Date.now(), data: null, quotaExceeded: true }));
+      return null;
     }
 
     if (!res.ok) { console.warn("Stormglass feil:", res.status, json); return null; }
