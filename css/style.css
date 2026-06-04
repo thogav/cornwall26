@@ -45,7 +45,6 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-bottom: 90px;
   -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, h4 {
@@ -83,9 +82,18 @@ a:hover { text-decoration: underline; }
   letter-spacing: 0.01em;
 }
 
-/* Desktop nav */
-#desktop-nav { display: none; gap: 2px; margin-top: 10px; }
+/* Nav — felles stil for desktop og mobil */
+#desktop-nav {
+  display: flex;
+  gap: 2px;
+  margin-top: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+#desktop-nav::-webkit-scrollbar { display: none; }
 #desktop-nav .nav-btn {
+  flex-shrink: 0;
   flex-direction: row;
   gap: 6px;
   color: var(--gray-4);
@@ -128,20 +136,8 @@ a:hover { text-decoration: underline; }
 .today-event .t-time { font-weight: 700; display: block; margin-bottom: 1px; }
 .today-event .t-label { opacity: 0.8; }
 
-/* ---- Bottom Nav — iOS style ---- */
-#bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-top: 1px solid rgba(0,0,0,0.08);
-  display: flex;
-  z-index: 200;
-  padding: 8px 0 16px;
-}
+/* ---- Nav-btn — felles stil ---- */
 .nav-btn {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1162,16 +1158,12 @@ a:hover { text-decoration: underline; }
 
 /* ---- Responsive ---- */
 @media (min-width: 640px) {
-  body { padding-bottom: 0; }
-  #bottom-nav { display: none; }
-  #desktop-nav { display: flex; }
   .home-hero { padding: 52px 32px 0; }
   .hero-title { font-size: 4.5rem; }
   .home-cards { padding: 24px 24px 24px; }
   .section-inner { padding: 28px 24px; }
-}
-@media (max-width: 639px) {
-  #desktop-nav { display: none; }
+  /* Romsligere nav-knapper på desktop */
+  #desktop-nav .nav-btn { font-size: 0.8rem; padding: 6px 14px; }
 }
 
 /* ---- Transitions ---- */

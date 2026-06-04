@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
 <body>
 
@@ -23,7 +23,6 @@
       <button class="nav-btn" data-nav="reiseplan"   onclick="navigate('reiseplan')"><i data-lucide="calendar-days" width="16" height="16"></i> Reiseplan</button>
       <button class="nav-btn" data-nav="hoteller"    onclick="navigate('hoteller')"><i data-lucide="building-2" width="16" height="16"></i> Hoteller</button>
       <button class="nav-btn" data-nav="aktiviteter" onclick="navigate('aktiviteter')"><i data-lucide="compass" width="16" height="16"></i> Aktiviteter</button>
-      <button class="nav-btn" data-nav="program"     onclick="navigate('program')"><i data-lucide="table-2" width="16" height="16"></i> Program</button>
       <button class="nav-btn" data-nav="kart"        onclick="navigate('kart')"><i data-lucide="map" width="16" height="16"></i> Kart</button>
       <button class="nav-btn" data-nav="info"        onclick="navigate('info')"><i data-lucide="info" width="16" height="16"></i> Info</button>
     </nav>
@@ -164,20 +163,6 @@
     </div>
   </section>
 
-  <!-- ================================================ PROGRAM ================================================ -->
-  <section id="sec-program" class="section">
-    <div class="section-inner">
-      <div class="section-eyebrow">Oversikt</div>
-      <h2 class="section-title">Programoversikt</h2>
-      <p class="section-desc">Alle 8 dager i ett blikk</p>
-      <div class="card" style="overflow:hidden">
-        <div class="card-inner" style="padding:12px">
-          <div id="programme-container"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ================================================ KART ================================================ -->
   <section id="sec-kart" class="section">
     <div class="section-inner">
@@ -262,19 +247,12 @@
     </div>
   </section>
 
-  <!-- ================================================ BOTTOM NAV ================================================ -->
-  <nav id="bottom-nav">
-    <button class="nav-btn" data-nav="hjem"        onclick="navigate('hjem')"><i data-lucide="home" width="22" height="22"></i>Hjem</button>
-    <button class="nav-btn" data-nav="reiseplan"   onclick="navigate('reiseplan')"><i data-lucide="calendar-days" width="22" height="22"></i>Plan</button>
-    <button class="nav-btn" data-nav="aktiviteter" onclick="navigate('aktiviteter')"><i data-lucide="compass" width="22" height="22"></i>Aktiviteter</button>
-    <button class="nav-btn" data-nav="kart"        onclick="navigate('kart')"><i data-lucide="map" width="22" height="22"></i>Kart</button>
-    <button class="nav-btn" data-nav="info"        onclick="navigate('info')"><i data-lucide="info" width="22" height="22"></i>Info</button>
-  </nav>
+  <!-- Bottom nav fjernet — navigasjon er nå i topp-headeren (se #desktop-nav) -->
 
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="js/data.js?v=4"></script>
   <script src="js/supabase-client.js?v=5"></script>
   <script src="js/tides.js?v=3"></script>
-  <script src="js/app.js?v=8"></script>
+  <script src="js/app.js?v=9"></script>
 </body>
 </html>

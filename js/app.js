@@ -186,7 +186,15 @@ function renderDays() {
 
     const chips = day.activities.map(id => TRIP.activities[id]).filter(Boolean)
       .map(a => `<button class="suggestion-chip" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("arrow-right", 12)} ${a.name}</button>`).join("");
-    const chipsHtml = chips ? `<div class="suggestion-row">${chips}</div>` : "";
+
+    // Brukertillagte aktiviteter for denne dagen
+    const userActsForDay = [...getLocalActivities(), ...(window._remoteActivities || [])]
+      .filter(a => String(a.day) === String(day.day));
+    const userChips = userActsForDay.map(a =>
+      `<button class="suggestion-chip" style="background:#dcfce7;border-color:#86efac;color:#166534" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("check-circle-2", 12)} ${a.name}</button>`
+    ).join("");
+
+    const chipsHtml = (chips || userChips) ? `<div class="suggestion-row">${chips}${userChips}</div>` : "";
 
     // Tidevann-placeholder — fylles asynkront etter rendering
     // Sjekk om vi har cached data, quota-exceeded eller ingenting
@@ -518,7 +526,10 @@ async function removeActivity(id) {
     setTimeout(() => card.remove(), 200);
   }
   await deleteUserActivity(id);
-  renderActivities(); // re-render for å holde listen synkronisert
+  renderActivities();
+  renderDays();         // oppdater Reiseplan
+  renderHomeContent();  // oppdater Hjem (aktiviteter i dag)
+  renderIcons();
 }
 
 async function addToRouteAndRender(id) {
@@ -549,7 +560,7 @@ async function addToRouteAndRender(id) {
         const tideStore = JSON.parse(localStorage.getItem("cornwall_route_tides") || "{}");
         tideStore[id] = { extremes, date: dayObj.date };
         localStorage.setItem("cornwall_route_tides", JSON.stringify(tideStore));
-        renderActivities(); renderProgramme(); renderIcons();
+        renderActivities(); renderDays(); renderIcons();
       }
     }
   }
@@ -565,7 +576,7 @@ function removeFromRouteAndRender(id) {
     delete coords[id]; delete tides[id];
     localStorage.setItem("cornwall_route_coords", JSON.stringify(coords));
     localStorage.setItem("cornwall_route_tides",  JSON.stringify(tides));
-    renderActivities(); renderProgramme(); renderIcons();
+    renderActivities(); renderDays(); renderIcons();
   };
   if (card) {
     card.style.transition = "opacity 0.2s, transform 0.2s";
@@ -606,7 +617,7 @@ async function initAddForm() {
       const successEl = document.getElementById("form-success");
       successEl.style.display = "block";
       form.reset();
-      renderActivities(); renderProgramme(); renderIcons();
+      renderActivities(); renderDays(); renderHomeContent(); renderIcons();
 
       // Auto-geocoding — kjøres alltid når stedsfelt er fylt ut (Nominatim er gratis)
       if (locationInput && saved) {
@@ -630,7 +641,7 @@ async function initAddForm() {
                 const extremes = await fetchTidesForLocation(coords.lat, coords.lon, day.date, day.date);
                 if (extremes) {
                   successEl.textContent = "🌊 Tidevann lastet for " + locationInput + "!";
-                  renderActivities(); renderIcons();
+                  renderActivities(); renderDays(); renderIcons();
                   return;
                 }
               }
@@ -640,7 +651,7 @@ async function initAddForm() {
           } else {
             successEl.textContent = "✅ Lagret! (Sted '" + locationInput + "' ikke funnet — sjekk stavemåten)";
           }
-          renderActivities(); renderIcons();
+          renderActivities(); renderDays(); renderIcons();
         });
       } else {
         successEl.textContent = "✅ Aktiviteten er lagt til og deles med alle fire!";
@@ -921,10 +932,6 @@ function renderHomeContent() {
         <div class="quicknav-icon">${ic("info", 22)}</div>
         <span class="quicknav-label">Info</span>
       </button>
-      <button class="quicknav-btn" onclick="navigate('program')">
-        <div class="quicknav-icon">${ic("table-2", 22)}</div>
-        <span class="quicknav-label">Program</span>
-      </button>
     </div>`;
   renderIcons();
 }
@@ -949,6 +956,9 @@ async function loadTidesIntoCards() {
 async function loadRemoteActivities() {
   window._remoteActivities = await fetchUserActivities();
   renderActivities();
+  renderDays();         // oppdater Reiseplan med fjernlagrede aktiviteter
+  renderHomeContent();  // oppdater Hjem
+  renderIcons();
 }
 
 // ---- Init ----
@@ -960,7 +970,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderDays();
   renderHotels();
   renderActivities();
-  renderProgramme();
   renderMapLinks();
   renderInfo();
   initAddForm();
