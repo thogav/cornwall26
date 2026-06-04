@@ -145,7 +145,7 @@ const TRIP = {
       tideCoords: { lat: 49.9985, lon: -5.2065, name: "Lizard / Coverack" },
       driving: null,
       timeline: [],
-      activities: ["kynance-cove", "lizard-point", "helston"]
+      activities: ["kynance-cove", "lizard-point", "helston", "cadgwith-cove", "mullion-cove"]
     },
     {
       day: 3,
@@ -177,7 +177,7 @@ const TRIP = {
       tideCoords: { lat: 50.2127, lon: -5.4806, name: "St. Ives" },
       driving: null,
       timeline: [],
-      activities: ["polgoon-vineyard", "mousehole", "barbara-hepworth", "carbis-bay"]
+      activities: ["polgoon-vineyard", "mousehole", "barbara-hepworth", "carbis-bay", "zennor", "godrevy"]
     },
     {
       day: 5,
@@ -191,7 +191,7 @@ const TRIP = {
       tideCoords: { lat: 50.2127, lon: -5.4806, name: "St. Ives" },
       driving: null,
       timeline: [],
-      activities: ["lands-end-walk", "lands-end", "port-isaac"]
+      activities: ["lands-end-walk", "lands-end", "port-isaac", "minack-theatre", "porthcurno-beach"]
     },
     {
       day: 6,
@@ -210,7 +210,7 @@ const TRIP = {
         { time: "~15:00", icon: "⚓", label: "Ankomst Clovelly — innsjekk Red Lion Hotel" },
         { time: "20:00", icon: "🍽️", label: "Middag: Harbour Restaurant, Red Lion Hotel" }
       ],
-      activities: ["tintagel-castle", "clovelly-village", "harbour-restaurant"],
+      activities: ["tintagel-castle", "clovelly-village", "harbour-restaurant", "hartland-abbey", "hartland-quay", "bucks-mills"],
       restaurant: {
         name: "Harbour Restaurant",
         hotel: "Red Lion Hotel",
@@ -234,7 +234,7 @@ const TRIP = {
         { time: "~12:00", icon: "🐟", label: "Ankomst Polperro — lunsj og utforsking" },
         { time: "~15:00", icon: "🏨", label: "Innsjekk Fieldhead Hotel, Looe" }
       ],
-      activities: ["polperro", "looe-island", "east-west-looe"]
+      activities: ["polperro", "looe-island", "east-west-looe", "talland-bay", "seaton-downderry", "cawsand-kingsand"]
     },
     {
       day: 8,
@@ -457,6 +457,134 @@ const TRIP = {
       url: "https://maps.google.com/?q=Looe+Cornwall",
       mapsUrl: "https://maps.google.com/?q=Looe+Cornwall",
       tip: "Banjo Pier er fin å sitte på kvelden med fish & chips.",
+      suggested: true
+    },
+
+    // ---- Lizard Peninsula ----
+    "cadgwith-cove": {
+      id: "cadgwith-cove",
+      name: "Cadgwith Cove",
+      description: "Nesten perfekt bevart fiskerlandsby med halmtekte hus og fargerike båter trukket opp på stranden. Et av de mest pittoreske stedene på hele Lizard-halvøya.",
+      type: "by",
+      url: "https://maps.google.com/?q=Cadgwith+Cove+Cornwall",
+      mapsUrl: "https://maps.google.com/?q=Cadgwith+Cove+Cornwall",
+      tip: "Puben The Cadgwith Cove Inn er en klassiker — tradisjonell cornisk pub rett ved stranden.",
+      suggested: true
+    },
+    "mullion-cove": {
+      id: "mullion-cove",
+      name: "Mullion Cove",
+      description: "Dramatisk havn klemt inn mellom høye klipper med turkisblått vann. Nasjonal Trust-eiet og godt bevart — en av Lizards vakreste steder.",
+      type: "natur",
+      url: "https://www.nationaltrust.org.uk/visit/cornwall/mullion-cove",
+      mapsUrl: "https://maps.google.com/?q=Mullion+Cove+Cornwall",
+      tip: "Gå ned til selve moloen for den beste utsikten. Mullion Cove Hotel-baren er fin til en drink.",
+      suggested: true
+    },
+
+    // ---- St. Ives-området ----
+    "zennor": {
+      id: "zennor",
+      name: "Zennor",
+      description: "Gammel, intakt landsby med en 1200-tallskirke kjent for sin mermaid-stol-legende. Dramatisk moorlandskap og puben Tinners Arms. D.H. Lawrence bodde her under 1. verdenskrig.",
+      type: "by",
+      url: "https://maps.google.com/?q=Zennor+Cornwall",
+      mapsUrl: "https://maps.google.com/?q=Zennor+Cornwall",
+      tip: "Kort kystvandringssti ut til Zennor Head for fin panoramautsikt. Tinners Arms er en av Cornwalls beste gamle puber.",
+      suggested: true
+    },
+    "godrevy": {
+      id: "godrevy",
+      name: "Godrevy fyrtårn & selkoloni",
+      description: "Vandring til fyrtårnet som inspirerte Virginia Woolfs roman *To the Lighthouse*. Under og rundt Mutton Cove nedenfor ligger en koloni av grå seler — best ved lavvann.",
+      type: "natur",
+      url: "https://www.nationaltrust.org.uk/visit/cornwall/godrevy",
+      mapsUrl: "https://maps.google.com/?q=Godrevy+Lighthouse+Cornwall",
+      tip: "Parkér ved Godrevy-parkeringen (National Trust). Selene er best synlige ved lavvann — sjekk tidtabell.",
+      suggested: true
+    },
+    "minack-theatre": {
+      id: "minack-theatre",
+      name: "Minack Theatre",
+      description: "Et av Englands mest spektakulære utendørsteatre — hugget inn i klippene 60 meter over en turkis bukt ved Porthcurno. Selv uten forestilling er stedet unikt og verdt turen.",
+      type: "kultur",
+      url: "https://minack.com/",
+      mapsUrl: "https://maps.google.com/?q=Minack+Theatre+Porthcurno+Cornwall",
+      tip: "Sjekk spilleprogrammet på minack.com — en kveldforestilling her er en uforglemmelig opplevelse. Book tidlig.",
+      suggested: true
+    },
+    "porthcurno-beach": {
+      id: "porthcurno-beach",
+      name: "Porthcurno Beach",
+      description: "Hvit sand, dypt blått vann og granittfjelsvegger på begge sider — regnes av mange som Cornwalls vakreste strand. Rett ved Minack Theatre.",
+      type: "natur",
+      url: "https://maps.google.com/?q=Porthcurno+Beach+Cornwall",
+      mapsUrl: "https://maps.google.com/?q=Porthcurno+Beach+Cornwall",
+      tip: "Kombiner alltid med Minack Theatre like over — de er 5 minutters gange fra hverandre.",
+      suggested: true
+    },
+
+    // ---- Clovelly / Nord-Devon ----
+    "hartland-abbey": {
+      id: "hartland-abbey",
+      name: "Hartland Abbey",
+      description: "1100-tallsabbedi omgjort til privatbolig gjennom 900 år med fascinerende historie. Vakre hager, skogsstier ned til kysten og en usedvanlig autentisk atmosfære.",
+      type: "attraksjon",
+      url: "https://www.hartlandabbey.com/",
+      mapsUrl: "https://maps.google.com/?q=Hartland+Abbey+Devon",
+      tip: "Sjekk åpningstider på forhånd — åpner ikke hver dag. Kombiner med Hartland Quay like ved.",
+      suggested: true
+    },
+    "hartland-quay": {
+      id: "hartland-quay",
+      name: "Hartland Quay",
+      description: "Dramatisk og vill kystlinje med noen av Englands mest ekstreme bergformasjoner. Et lite hotell/pub med utsikt rett ut mot Atlanterhavet. En ekte naturoplevelse.",
+      type: "natur",
+      url: "https://maps.google.com/?q=Hartland+Quay+Devon",
+      mapsUrl: "https://maps.google.com/?q=Hartland+Quay+Devon",
+      tip: "Puben på Hartland Quay Hotel har utendørssitting med spektakulær utsikt. Perfekt lunsjstopp.",
+      suggested: true
+    },
+    "bucks-mills": {
+      id: "bucks-mills",
+      name: "Buck's Mills",
+      description: "Liten, nesten ukjent bukt 5 km øst for Clovelly — nås til fots langs kystistien. Trange smug, fredelig og nesten ingen turister. En fin liten hemmelighet.",
+      type: "natur",
+      url: "https://maps.google.com/?q=Bucks+Mills+Devon",
+      mapsUrl: "https://maps.google.com/?q=Bucks+Mills+Devon",
+      tip: "Ca. 1 times enkel vandring fra Clovelly langs South West Coast Path. Ta med niste.",
+      suggested: true
+    },
+
+    // ---- Looe-området ----
+    "talland-bay": {
+      id: "talland-bay",
+      name: "Talland Bay",
+      description: "Skjult og rolig strand mellom Looe og Polperro, med en gammel kirke på klippekanten over. Gode rockepøler, kafé og langt færre besøkende enn nabostedene.",
+      type: "natur",
+      url: "https://maps.google.com/?q=Talland+Bay+Cornwall",
+      mapsUrl: "https://maps.google.com/?q=Talland+Bay+Cornwall",
+      tip: "Parkér oppe ved kirken og gå ned. Fin kyststi videre til Polperro herfra (~3 km).",
+      suggested: true
+    },
+    "seaton-downderry": {
+      id: "seaton-downderry",
+      name: "Seaton Beach & Downderry",
+      description: "Stille og rolige strender øst for Looe med lite turisttrafikk. The Inn on the Shore i Downderry har uteplass rett på vannkanten — perfekt til en øl eller lunsj.",
+      type: "natur",
+      url: "https://maps.google.com/?q=Downderry+Beach+Cornwall",
+      mapsUrl: "https://maps.google.com/?q=Downderry+Beach+Cornwall",
+      tip: "The Inn on the Shore er lokalt berømt for god mat med utsikt. Bestill bord om det er kveldsstopp.",
+      suggested: true
+    },
+    "cawsand-kingsand": {
+      id: "cawsand-kingsand",
+      name: "Cawsand & Kingsand",
+      description: "To tvillinglandsbyer på Rame-halvøya — kalt «Glemt Cornwall». Fargerike hus, liten sandstrand og puben The Cross Keys. Sjarmerende og nesten uberørt av masseturisme.",
+      type: "by",
+      url: "https://maps.google.com/?q=Cawsand+Cornwall",
+      mapsUrl: "https://maps.google.com/?q=Cawsand+Cornwall",
+      tip: "Ca. 22 km fra Looe. Kombiner gjerne med Rame Head-neset like ved for panoramautsikt over Plymouth Sound.",
       suggested: true
     }
   },
