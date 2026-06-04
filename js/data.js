@@ -285,7 +285,7 @@ const TRIP = {
       type: "natur",
       url: "https://maps.google.com/?q=Lizard+Point+Cornwall",
       mapsUrl: "https://maps.google.com/?q=Lizard+Point+Cornwall",
-      tip: "Gå ned til Polpeor Cove nedenfor — rolig og vakker.",
+      tip: "Gå ned til Polpeor Cove nedenfor — rolig og vakkert sted.",
       suggested: true
     },
     "helston": {
@@ -411,7 +411,7 @@ const TRIP = {
     "clovelly-village": {
       id: "clovelly-village",
       name: "Clovelly Village",
-      description: "Privat eid fiskerlandsby der det eneste transportmiddelet er trege esler. Bratte og sjarmerende smug ned til havnen.",
+      description: "Privat eid fiskerlandsby der det eneste transportmiddelet er trege esler. Bratte og sjarmerende smug og gater ned til havnen.",
       type: "by",
       url: "https://www.clovelly.co.uk/",
       mapsUrl: "https://maps.google.com/?q=Clovelly+Village+Devon",
@@ -436,7 +436,7 @@ const TRIP = {
       type: "by",
       url: "https://maps.google.com/?q=Polperro+Cornwall",
       mapsUrl: "https://maps.google.com/?q=Polperro+Cornwall",
-      tip: "Kjørekostnadene er begrenset — det er bilfritt sentrum. Parker ved inngangen og gå ned.",
+      tip: "Kjøremulighetene er begrenset — det er bilfritt sentrum. Parker ved inngangen og gå ned.",
       suggested: true
     },
     "looe-island": {
