@@ -574,8 +574,9 @@ async function removeActivity(id) {
 }
 
 async function addToRouteAndRender(id) {
-  addToRoute(id);
+  await addToRoute(id);  // async — synkroniserer til Supabase
   renderActivities();
+  renderDays();
   renderIcons();
 
   // Finn aktiviteten og hvilken dag den tilhører
@@ -616,9 +617,9 @@ function setActivityDay(id, newDay) {
 
 function removeFromRouteAndRender(id) {
   const card = document.getElementById("act-card-" + id);
-  const cleanup = () => {
-    removeFromRoute(id);
-    setDayOverride(id, null); // nullstill eventuell dag-overstyring
+  const cleanup = async () => {
+    await removeFromRoute(id);  // async — sletter fra Supabase
+    setDayOverride(id, null);
     // Rydd opp lagrede koordinater og tidevann
     const coords = JSON.parse(localStorage.getItem("cornwall_route_coords") || "{}");
     const tides  = JSON.parse(localStorage.getItem("cornwall_route_tides")  || "{}");
@@ -1011,7 +1012,8 @@ async function loadTidesIntoCards() {
 // Faller tilbake til localStorage hvis Supabase ikke er satt opp.
 function getUserActivities() {
   if (supabaseReady && window._remoteActivities !== undefined) {
-    return window._remoteActivities || [];
+    // Filtrer bort planned-builtin — de brukes kun internt av getPlannedIds()
+    return (window._remoteActivities || []).filter(a => a.type !== "planned-builtin");
   }
   return getLocalActivities();
 }

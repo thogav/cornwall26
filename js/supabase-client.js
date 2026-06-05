@@ -117,20 +117,67 @@ function getLocalActivities() {
   return JSON.parse(localStorage.getItem("cornwall_activities") || "[]");
 }
 
-// ---- "På ruten"-funksjonalitet ----
+// ---- "På ruten"-funksjonalitet (synkronisert via Supabase) ----
+// Innebygde aktiviteter markert «på ruten» lagres som type="planned-builtin"
+// i Supabase-tabellen — nøyaktig samme infrastruktur som brukertillagte.
+
 function getPlannedIds() {
+  if (supabaseReady && window._remoteActivities !== undefined) {
+    // Les fra Supabase-cachen — gjelder for alle enheter
+    return (window._remoteActivities || [])
+      .filter(a => a.type === "planned-builtin")
+      .map(a => a.name);
+  }
+  // Fallback til localStorage når Supabase ikke er tilgjengelig
   return JSON.parse(localStorage.getItem("cornwall_planned") || "[]");
 }
-function addToRoute(id) {
-  const planned = getPlannedIds();
-  if (!planned.includes(id)) {
-    planned.push(id);
-    localStorage.setItem("cornwall_planned", JSON.stringify(planned));
+
+async function addToRoute(id) {
+  // Oppdater localStorage umiddelbart for rask UI-respons
+  const local = JSON.parse(localStorage.getItem("cornwall_planned") || "[]");
+  if (!local.includes(id)) {
+    local.push(id);
+    localStorage.setItem("cornwall_planned", JSON.stringify(local));
   }
+
+  if (!supabaseReady) return;
+
+  // Ikke legg til dobbelt
+  const alreadyThere = (window._remoteActivities || []).some(
+    a => a.type === "planned-builtin" && a.name === id
+  );
+  if (alreadyThere) return;
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/activities`, {
+      method: "POST",
+      headers: { ...SB_HEADERS, "Prefer": "return=representation" },
+      body: JSON.stringify({ name: id, type: "planned-builtin" })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (window._remoteActivities !== undefined) {
+        window._remoteActivities = [...(window._remoteActivities || []), data[0]];
+      }
+    } else {
+      console.warn("addToRoute Supabase feil:", res.status);
+    }
+  } catch (e) { console.warn("addToRoute feil:", e); }
 }
-function removeFromRoute(id) {
-  const planned = getPlannedIds().filter(p => p !== id);
-  localStorage.setItem("cornwall_planned", JSON.stringify(planned));
+
+async function removeFromRoute(id) {
+  // Oppdater localStorage umiddelbart
+  const local = JSON.parse(localStorage.getItem("cornwall_planned") || "[]").filter(p => p !== id);
+  localStorage.setItem("cornwall_planned", JSON.stringify(local));
+
+  if (!supabaseReady) return;
+
+  const entry = (window._remoteActivities || []).find(
+    a => a.type === "planned-builtin" && a.name === id
+  );
+  if (entry) {
+    await deleteUserActivity(entry.id);
+  }
 }
 
 // ---- Dag-overstyring ----
