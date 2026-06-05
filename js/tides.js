@@ -21,8 +21,12 @@ async function fetchTidesForLocation(lat, lon, startDate, endDate) {
   const cacheKey = `tides_sg_${lat}_${lon}_${startDate}`;
 
   // 1. Sjekk pre-lastet statisk cache (committet til GitHub)
-  if (window.TIDES_PRELOADED?.[cacheKey]) {
-    return window.TIDES_PRELOADED[cacheKey].data;
+  // Søker på koordinater + at datasettet inneholder startDate (ikke eksakt nøkkel)
+  if (window.TIDES_PRELOADED) {
+    const coordKey = `${lat}_${lon}`;
+    const entry = Object.entries(window.TIDES_PRELOADED)
+      .find(([k, v]) => k.includes(coordKey) && v.data?.some(e => e.time.startsWith(startDate)));
+    if (entry) return entry[1].data;
   }
 
   // 2. Sjekk localStorage-cache
