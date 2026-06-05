@@ -19,14 +19,20 @@ async function fetchTidesForLocation(lat, lon, startDate, endDate) {
   if (!TIDES_API_KEY) return null;
 
   const cacheKey = `tides_sg_${lat}_${lon}_${startDate}`;
+
+  // 1. Sjekk pre-lastet statisk cache (committet til GitHub)
+  if (window.TIDES_PRELOADED?.[cacheKey]) {
+    return window.TIDES_PRELOADED[cacheKey].data;
+  }
+
+  // 2. Sjekk localStorage-cache
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
     if (cached) {
-      // Returner cache om den er fersk, ELLER om kvote var overskredet (vent til neste dag)
       const age = Date.now() - cached.fetchedAt;
       const quotaTTL = 24 * 60 * 60 * 1000;
       if (age < CACHE_TTL_MS || (cached.quotaExceeded && age < quotaTTL)) {
-        return cached.data; // null ved quota-exceeded — ingen nye kall
+        return cached.data;
       }
     }
   } catch { /* ignorer */ }
