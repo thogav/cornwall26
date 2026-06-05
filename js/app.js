@@ -2,6 +2,11 @@
 // CORNWALL & DEVON 2026 — App Logic v3
 // ============================================================
 
+// Supabase er eneste kilde til sannhet. Initialiseres som tomt array
+// umiddelbart slik at getUserActivities() aldri bruker localStorage
+// mens vi venter på Supabase-svaret.
+window._remoteActivities = [];
+
 function ic(name, size = 16) {
   return `<i data-lucide="${name}" width="${size}" height="${size}"></i>`;
 }
@@ -394,7 +399,7 @@ function renderActivities() {
           ${deleteBtn(a.id, "removeActivity")}
         </div>
         <p class="activity-desc">${a.description || ""}</p>
-        ${a.locationName ? `<div style="font-size:0.75rem;color:var(--text-3);margin-bottom:6px">${ic("map-pin",11)} ${a.locationName}</div>` : ""}
+        ${(a.locationName || a.location_name) ? `<div style="font-size:0.75rem;color:var(--text-3);margin-bottom:6px">${ic("map-pin",11)} ${a.locationName || a.location_name}</div>` : ""}
         <div class="act-tide-slot"></div>
         <div class="btn-row">
           ${a.url ? `<a href="${a.url}" target="_blank" class="btn-secondary">${ic("external-link", 13)} Mer info</a>` : ""}
@@ -667,22 +672,23 @@ async function initAddForm() {
       form.reset();
       renderActivities(); renderDays(); renderHomeContent(); renderIcons();
 
-      // Auto-geocoding — kjøres alltid når stedsfelt er fylt ut (Nominatim er gratis)
+      // Auto-geocoding (kjøres alltid — Nominatim er gratis)
       if (locationInput && saved) {
         successEl.textContent = "📍 Lagret! Finner koordinater for " + locationInput + "...";
         geocodePlace(locationInput).then(async coords => {
           if (coords) {
-            // Lagre koordinater i localStorage uansett API-nøkkel
-            const stored = JSON.parse(localStorage.getItem("cornwall_activities") || "[]");
-            const idx = stored.findIndex(a => String(a.id) === String(saved.id));
-            if (idx >= 0) {
-              stored[idx].lat = coords.lat;
-              stored[idx].lon = coords.lon;
-              localStorage.setItem("cornwall_activities", JSON.stringify(stored));
+            // Oppdater koordinater i Supabase
+            await updateActivityCoords(saved.id, coords.lat, coords.lon);
+            // Oppdater også lokal cache
+            if (window._remoteActivities) {
+              const idx = window._remoteActivities.findIndex(a => String(a.id) === String(saved.id));
+              if (idx >= 0) {
+                window._remoteActivities[idx].lat = coords.lat;
+                window._remoteActivities[idx].lon = coords.lon;
+              }
             }
 
             if (TIDES_API_KEY && saved.day) {
-              // Hent tidevann om API-nøkkel finnes
               successEl.textContent = "🌊 Koordinater funnet — henter tidevann...";
               const day = TRIP.days.find(d => d.day === Number(saved.day));
               if (day) {
@@ -694,7 +700,7 @@ async function initAddForm() {
                 }
               }
             } else {
-              successEl.textContent = "📍 Koordinater lagret for " + locationInput + ". Tidevann aktiveres når Stormglass API-nøkkel settes opp.";
+              successEl.textContent = "✅ Lagret! Koordinater funnet for " + locationInput + ".";
             }
           } else {
             successEl.textContent = "✅ Lagret! (Sted '" + locationInput + "' ikke funnet — sjekk stavemåten)";
@@ -1046,6 +1052,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadRemoteActivities();
   loadTidesIntoCards();
   prefetchAllTides();
+
+  // Periodisk oppdatering fra Supabase hvert 30. sekund
+  // slik at endringer fra andre vises uten full reload
+  setInterval(loadRemoteActivities, 30000);
 
   navigate("hjem");
 });
