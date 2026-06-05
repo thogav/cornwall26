@@ -14,6 +14,58 @@
 </head>
 <body>
 
+  <!-- ================================================ PASSORD-SKJERM ================================================ -->
+  <div id="lock-screen" style="
+    display:none;
+    position:fixed;inset:0;z-index:9999;
+    background:linear-gradient(175deg,rgba(10,39,68,0.97) 0%,rgba(10,60,110,0.97) 100%),
+               url('images/hero.jpg') center/cover no-repeat;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:32px 24px;font-family:'Inter',sans-serif;">
+    <div style="font-size:2rem;margin-bottom:8px">🌊</div>
+    <h1 style="color:white;font-family:'Playfair Display',serif;font-size:2rem;letter-spacing:-0.03em;margin-bottom:6px;text-align:center">Cornwall & Devon 2026</h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin-bottom:32px;text-align:center">Eirin · Stig · Pia · Thomas</p>
+    <div style="width:100%;max-width:320px">
+      <input id="lock-input" type="password" placeholder="Passord"
+        style="width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.2);
+               background:rgba(255,255,255,0.1);color:white;font-size:1rem;font-family:inherit;
+               outline:none;backdrop-filter:blur(10px);box-sizing:border-box;text-align:center;
+               letter-spacing:0.08em;"
+        onkeydown="if(event.key==='Enter')checkPassword()" />
+      <div id="lock-error" style="color:#f87171;font-size:0.8rem;text-align:center;margin-top:8px;min-height:20px"></div>
+      <button onclick="checkPassword()"
+        style="width:100%;margin-top:12px;padding:14px;border-radius:980px;border:none;
+               background:linear-gradient(135deg,#0a2744,#0a5eb5);color:white;font-size:0.95rem;
+               font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:-0.01em;">
+        Åpne appen
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const PW = "Molly2026";
+      const KEY = "cornwall_auth";
+      function checkPassword() {
+        const val = document.getElementById("lock-input").value;
+        if (val === PW) {
+          sessionStorage.setItem(KEY, "1");
+          document.getElementById("lock-screen").style.display = "none";
+        } else {
+          const err = document.getElementById("lock-error");
+          err.textContent = "Feil passord — prøv igjen";
+          document.getElementById("lock-input").value = "";
+          document.getElementById("lock-input").focus();
+          setTimeout(() => err.textContent = "", 2500);
+        }
+      }
+      window.checkPassword = checkPassword;
+      if (!sessionStorage.getItem(KEY)) {
+        document.getElementById("lock-screen").style.display = "flex";
+      }
+    })();
+  </script>
+
   <!-- ================================================ TOP HEADER ================================================ -->
   <header id="top-header">
     <h1>Cornwall & Devon 2026</h1>
