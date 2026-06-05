@@ -199,19 +199,23 @@ function renderDays() {
     const hotelHtml = hotel ? `
       <div class="hotel-info-row" style="margin-top:12px">${ic("building-2", 14)}<span><strong>${hotel.name}</strong><br><span style="font-size:0.77rem">${hotel.address}</span></span></div>` : "";
 
-    // Innebygde aktiviteter for denne dagen (hensyn til overstyringer)
-    const allBuiltInIds = Object.keys(TRIP.activities).filter(id => getEffectiveDay(id) === day.day);
-    const chips = allBuiltInIds.map(id => TRIP.activities[id]).filter(Boolean)
-      .map(a => `<button class="suggestion-chip" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("arrow-right", 12)} ${a.name}</button>`).join("");
+    // Reiseplan viser KUN det som er lagt til på ruten — ikke alle forslag
+    const plannedIds = getPlannedIds();
+    const plannedBuiltInIds = Object.keys(TRIP.activities)
+      .filter(id => plannedIds.includes(id) && getEffectiveDay(id) === day.day);
+    const plannedChips = plannedBuiltInIds.map(id => TRIP.activities[id]).filter(Boolean)
+      .map(a => `<button class="suggestion-chip" style="background:#d1fae5;border-color:#6ee7b7;color:#065f46" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("check-circle-2", 12)} ${a.name}</button>`).join("");
 
-    // Brukertillagte aktiviteter — Supabase er kilde til sannhet når tilgjengelig
+    // Brukertillagte (via skjema) for denne dagen
     const userActsForDay = getUserActivities()
       .filter(a => String(a.day) === String(day.day));
     const userChips = userActsForDay.map(a =>
-      `<button class="suggestion-chip" style="background:#dcfce7;border-color:#86efac;color:#166534" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("check-circle-2", 12)} ${a.name}</button>`
+      `<button class="suggestion-chip" style="background:#d1fae5;border-color:#6ee7b7;color:#065f46" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("check-circle-2", 12)} ${a.name}</button>`
     ).join("");
 
-    const chipsHtml = (chips || userChips) ? `<div class="suggestion-row">${chips}${userChips}</div>` : "";
+    const chipsHtml = (plannedChips || userChips)
+      ? `<div class="suggestion-row">${plannedChips}${userChips}</div>`
+      : `<div style="font-size:0.78rem;color:var(--text-3);margin-top:10px;font-style:italic">Ingen aktiviteter lagt til ennå — gå til ${ic("compass",12)} Aktiviteter for å legge til.</div>`;
 
     // Tidevann-placeholder — fylles asynkront etter rendering
     // Sjekk om vi har cached data, quota-exceeded eller ingenting
