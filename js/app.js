@@ -310,7 +310,7 @@ function renderActivities() {
       const storedTide = routeTidesStore[a.id];
       const tideHtml = storedTide
         ? buildTideHtml(storedTide.extremes, storedTide.date)
-        : (TIDES_API_KEY ? `<div class="tide-setup-hint" style="margin-bottom:8px">${ic("waves",12)} Henter tidevann...</div>` : "");
+        : "";
       return `
       <div class="card card-accent-teal" id="act-card-${a.id}" style="margin-bottom:14px">
         <div class="card-inner">
@@ -359,7 +359,7 @@ function renderActivities() {
         </div>
         <p class="activity-desc">${a.description || ""}</p>
         ${a.locationName ? `<div style="font-size:0.75rem;color:var(--text-3);margin-bottom:6px">${ic("map-pin",11)} ${a.locationName}</div>` : ""}
-        <div class="act-tide-slot">${a.lat && TIDES_API_KEY ? `<div class="tide-setup-hint" style="margin-bottom:6px">${ic("waves",12)} Laster tidevann...</div>` : ""}</div>
+        <div class="act-tide-slot"></div>
         <div class="btn-row">
           ${a.url ? `<a href="${a.url}" target="_blank" class="btn-secondary">${ic("external-link", 13)} Mer info</a>` : ""}
           ${a.added_by ? `<span class="btn-secondary" style="cursor:default;pointer-events:none">${ic("user", 13)} ${a.added_by}</span>` : ""}
@@ -808,7 +808,7 @@ function renderHomeContent() {
       ${actsHtml}
 
       <!-- Tidevann for i dag -->
-      ${today.tideCoords ? `<div id="tide-home-today" class="tide-setup-hint" style="margin-bottom:14px">${ic("waves",13)} ${TIDES_API_KEY ? "Laster tidevann..." : "Tidevann: legg inn WorldTides API-nøkkel"}</div>` : ""}
+      ${today.tideCoords ? `<div id="tide-home-today"></div>` : ""}
 
       <!-- Kveldsbooking -->
       ${restaurant ? `
