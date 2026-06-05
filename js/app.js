@@ -785,8 +785,10 @@ function renderHomeContent() {
         }).join("")}
       </ul>` : `<p style="font-size:0.9rem;color:var(--text-2);padding:6px 0;font-weight:500">Utforsk ${locLabel}!</p>`;
 
-    // Aktiviteter i dag — forhåndsdefinerte + brukerlagte
-    const builtInActs = (today.activities || [])
+    // Aktiviteter i dag — kun planlagte (på ruten) + brukerlagte
+    const plannedIds = getPlannedIds();
+    const builtInActs = Object.keys(TRIP.activities)
+      .filter(id => plannedIds.includes(id) && getEffectiveDay(id) === today.day)
       .map(id => TRIP.activities[id]).filter(Boolean);
     const userActs = getUserActivities()
       .filter(a => String(a.day) === String(today.day));
@@ -799,7 +801,7 @@ function renderHomeContent() {
             <div class="card-icon card-icon--teal">${ic("compass", 20)}</div>
             <div>
               <div class="card-title">I dag på ${locLabel}</div>
-              <div class="card-subtitle-text">${allActs.length} steder og aktiviteter</div>
+              <div class="card-subtitle-text">${allActs.length} ${allActs.length === 1 ? "aktivitet" : "aktiviteter"} planlagt</div>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px">
@@ -812,6 +814,7 @@ function renderHomeContent() {
                   <div style="font-weight:600;font-size:0.85rem;color:var(--black)">${a.name}</div>
                   ${a.tip && !a.booked ? `<div style="font-size:0.75rem;color:var(--text-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.tip}</div>` : ""}
                   ${a.booked ? `<div style="font-size:0.75rem;color:#16a34a;font-weight:600">✅ Bestilt</div>` : ""}
+                  ${(a.location_name || a.locationName) ? `<div style="font-size:0.72rem;color:var(--text-3)">${a.location_name || a.locationName}</div>` : ""}
                 </div>
                 ${a.mapsUrl ? `<a href="${a.mapsUrl}" target="_blank" style="flex-shrink:0;color:var(--blue)">${ic("map-pin", 16)}</a>` : ""}
               </div>`).join("")}
