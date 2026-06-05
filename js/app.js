@@ -149,6 +149,16 @@ function fmtShort(str) {
 // ---- Tidevann-cache for dag-visning ----
 window._tideCache = window._tideCache || {};
 
+// Synkron oppslag i pre-lastet statisk cache (tides-preloaded.js)
+function getPreloadedTidesForDay(day) {
+  if (!window.TIDES_PRELOADED || !day?.tideCoords) return null;
+  const { lat, lon } = day.tideCoords;
+  const coordKey = `${lat}_${lon}`;
+  const entry = Object.entries(window.TIDES_PRELOADED)
+    .find(([k, v]) => k.includes(coordKey) && v.data?.some(e => e.time.startsWith(day.date)));
+  return entry ? entry[1].data : null;
+}
+
 async function loadTidesForDay(day) {
   if (!day.tideCoords || !TIDES_API_KEY) return null;
   const key = day.date + "_" + day.tideCoords.lat;
@@ -189,8 +199,8 @@ function renderDays() {
     const chips = allBuiltInIds.map(id => TRIP.activities[id]).filter(Boolean)
       .map(a => `<button class="suggestion-chip" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("arrow-right", 12)} ${a.name}</button>`).join("");
 
-    // Brukertillagte aktiviteter for denne dagen
-    const userActsForDay = [...getLocalActivities(), ...(window._remoteActivities || [])]
+    // Brukertillagte aktiviteter — Supabase er kilde til sannhet når tilgjengelig
+    const userActsForDay = getUserActivities()
       .filter(a => String(a.day) === String(day.day));
     const userChips = userActsForDay.map(a =>
       `<button class="suggestion-chip" style="background:#dcfce7;border-color:#86efac;color:#166534" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("check-circle-2", 12)} ${a.name}</button>`
@@ -205,11 +215,13 @@ function renderDays() {
     const tideId = `tide-day-${day.day}`;
     let tideHtml = "";
     if (day.tideCoords && TIDES_API_KEY) {
-      if (tideCached?.data) {
-        // Har data — vis med en gang
+      // Prioriter: 1) pre-lastet statisk cache, 2) localStorage, 3) asynkron placeholder
+      const preloaded = getPreloadedTidesForDay(day);
+      if (preloaded) {
+        tideHtml = buildTideHtml(preloaded, day.date) || "";
+      } else if (tideCached?.data) {
         tideHtml = buildTideHtml(tideCached.data, day.date) || "";
       } else {
-        // Ingen data ennå (quota eller ikke hentet) — vis ingenting, fylles inn asynkront
         tideHtml = `<div id="${tideId}"></div>`;
       }
     }
@@ -298,7 +310,7 @@ function renderActivities() {
     ids = Object.keys(TRIP.activities).filter(id => getEffectiveDay(id) === filterDay);
   }
   const items = ids.map(id => TRIP.activities[id]).filter(Boolean);
-  const userActs = [...getLocalActivities(), ...(window._remoteActivities || [])].filter(a => activeFilter === "alle" || String(a.day) === String(activeFilter));
+  const userActs = getUserActivities().filter(a => activeFilter === "alle" || String(a.day) === String(activeFilter));
 
   const plannedIds = getPlannedIds();
 
@@ -432,7 +444,7 @@ function renderProgramme() {
   const container = document.getElementById("programme-container");
   if (!container) return;
   const plannedIds = getPlannedIds();
-  const userActs   = [...getLocalActivities(), ...(window._remoteActivities || [])];
+  const userActs   = getUserActivities();
 
   const rows = TRIP.days.map(day => {
     const hotel = TRIP.hotels.find(h => h.id === day.hotelId);
@@ -646,6 +658,10 @@ async function initAddForm() {
     };
     try {
       const saved = await addUserActivity(activity);
+      // Legg til i _remoteActivities umiddelbart så det vises uten ekstra Supabase-kall
+      if (window._remoteActivities !== undefined) {
+        window._remoteActivities = [saved, ...(window._remoteActivities || [])];
+      }
       const successEl = document.getElementById("form-success");
       successEl.style.display = "block";
       form.reset();
@@ -761,7 +777,7 @@ function renderHomeContent() {
     // Aktiviteter i dag — forhåndsdefinerte + brukerlagte
     const builtInActs = (today.activities || [])
       .map(id => TRIP.activities[id]).filter(Boolean);
-    const userActs = [...getLocalActivities(), ...(window._remoteActivities || [])]
+    const userActs = getUserActivities()
       .filter(a => String(a.day) === String(today.day));
     const allActs = [...builtInActs, ...userActs];
 
@@ -984,12 +1000,22 @@ async function loadTidesIntoCards() {
   renderIcons();
 }
 
+// ---- Aktiviteter: Supabase som kilde til sannhet ----
+// Når Supabase er klar brukes kun _remoteActivities.
+// Faller tilbake til localStorage hvis Supabase ikke er satt opp.
+function getUserActivities() {
+  if (supabaseReady && window._remoteActivities !== undefined) {
+    return window._remoteActivities || [];
+  }
+  return getLocalActivities();
+}
+
 // ---- Remote activities ----
 async function loadRemoteActivities() {
   window._remoteActivities = await fetchUserActivities();
   renderActivities();
-  renderDays();         // oppdater Reiseplan med fjernlagrede aktiviteter
-  renderHomeContent();  // oppdater Hjem
+  renderDays();
+  renderHomeContent();
   renderIcons();
 }
 
