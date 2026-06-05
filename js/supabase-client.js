@@ -84,6 +84,23 @@ function removeFromRoute(id) {
   localStorage.setItem("cornwall_planned", JSON.stringify(planned));
 }
 
+// ---- Dag-overstyring for innebygde aktiviteter ----
+function getDayOverrides() {
+  return JSON.parse(localStorage.getItem("cornwall_day_overrides") || "{}");
+}
+function setDayOverride(id, day) {
+  const overrides = getDayOverrides();
+  if (day) overrides[id] = Number(day);
+  else delete overrides[id];
+  localStorage.setItem("cornwall_day_overrides", JSON.stringify(overrides));
+}
+function getEffectiveDay(activityId) {
+  const overrides = getDayOverrides();
+  if (overrides[activityId]) return overrides[activityId];
+  const day = TRIP.days.find(d => d.activities.includes(activityId));
+  return day ? day.day : null;
+}
+
 async function deleteUserActivity(id) {
   // Fjern fra localStorage
   const existing = JSON.parse(localStorage.getItem("cornwall_activities") || "[]");

@@ -184,7 +184,9 @@ function renderDays() {
     const hotelHtml = hotel ? `
       <div class="hotel-info-row" style="margin-top:12px">${ic("building-2", 14)}<span><strong>${hotel.name}</strong><br><span style="font-size:0.77rem">${hotel.address}</span></span></div>` : "";
 
-    const chips = day.activities.map(id => TRIP.activities[id]).filter(Boolean)
+    // Innebygde aktiviteter for denne dagen (hensyn til overstyringer)
+    const allBuiltInIds = Object.keys(TRIP.activities).filter(id => getEffectiveDay(id) === day.day);
+    const chips = allBuiltInIds.map(id => TRIP.activities[id]).filter(Boolean)
       .map(a => `<button class="suggestion-chip" onclick="filterByDay(${day.day});navigate('aktiviteter')">${ic("arrow-right", 12)} ${a.name}</button>`).join("");
 
     // Brukertillagte aktiviteter for denne dagen
@@ -286,7 +288,15 @@ function renderActivities() {
   const container = document.getElementById("activities-container");
   if (!container) return;
 
-  let ids = activeFilter === "alle" ? Object.keys(TRIP.activities) : (TRIP.days.find(d => d.day === Number(activeFilter))?.activities || []);
+  // Hensyn til dag-overstyringer ved filtrering
+  let ids;
+  if (activeFilter === "alle") {
+    ids = Object.keys(TRIP.activities);
+  } else {
+    const filterDay = Number(activeFilter);
+    // Innebygde aktiviteter for denne dagen (hensyn til overstyringer)
+    ids = Object.keys(TRIP.activities).filter(id => getEffectiveDay(id) === filterDay);
+  }
   const items = ids.map(id => TRIP.activities[id]).filter(Boolean);
   const userActs = [...getLocalActivities(), ...(window._remoteActivities || [])].filter(a => activeFilter === "alle" || String(a.day) === String(activeFilter));
 
@@ -304,6 +314,10 @@ function renderActivities() {
   const routeTidesStore = JSON.parse(localStorage.getItem("cornwall_route_tides") || "{}");
 
   // Innebygde aktiviteter som er lagt til på ruten
+  const dayOptions = TRIP.days.map(d =>
+    `<option value="${d.day}">Dag ${d.day} — ${d.title}</option>`
+  ).join("");
+
   const plannedCards = items
     .filter(a => plannedIds.includes(a.id))
     .map(a => {
@@ -311,6 +325,15 @@ function renderActivities() {
       const tideHtml = storedTide
         ? buildTideHtml(storedTide.extremes, storedTide.date)
         : "";
+      const effectiveDay = getEffectiveDay(a.id);
+      const daySelector = `
+        <div style="margin-bottom:10px">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.07em;display:block;margin-bottom:4px">${ic("calendar", 11)} Dag</label>
+          <select onchange="setActivityDay('${a.id}', this.value)"
+            style="font-size:0.78rem;font-family:inherit;border:1.5px solid var(--gray-2);border-radius:8px;padding:5px 9px;background:var(--gray-1);color:var(--text);outline:none;cursor:pointer">
+            ${TRIP.days.map(d => `<option value="${d.day}" ${effectiveDay === d.day ? "selected" : ""}>Dag ${d.day} — ${d.title}</option>`).join("")}
+          </select>
+        </div>`;
       return `
       <div class="card card-accent-teal" id="act-card-${a.id}" style="margin-bottom:14px">
         <div class="card-inner">
@@ -322,6 +345,7 @@ function renderActivities() {
             ${deleteBtn(a.id, "removeFromRouteAndRender")}
           </div>
           <p class="activity-desc">${a.description}</p>
+          ${daySelector}
           ${tideHtml}
           ${a.tip && !a.booked ? `<div class="activity-tip">${ic("lightbulb", 14)} <span>${a.tip}</span></div>` : ""}
           ${a.booked ? `<div class="activity-booked">${ic("check-circle-2", 14)} <span>${a.tip}</span></div>` : ""}
@@ -566,10 +590,18 @@ async function addToRouteAndRender(id) {
   }
 }
 
+function setActivityDay(id, newDay) {
+  setDayOverride(id, newDay);
+  renderActivities();
+  renderDays();
+  renderIcons();
+}
+
 function removeFromRouteAndRender(id) {
   const card = document.getElementById("act-card-" + id);
   const cleanup = () => {
     removeFromRoute(id);
+    setDayOverride(id, null); // nullstill eventuell dag-overstyring
     // Rydd opp lagrede koordinater og tidevann
     const coords = JSON.parse(localStorage.getItem("cornwall_route_coords") || "{}");
     const tides  = JSON.parse(localStorage.getItem("cornwall_route_tides")  || "{}");
